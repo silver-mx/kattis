@@ -10,7 +10,11 @@ public class PizzaDeliveryTest {
 
     @Test
     public void calculateLowestDeliveryCost() throws Exception {
+        long startTime = System.currentTimeMillis();
         Assert.assertTrue(PizzaDelivery.calculateMinDeliveryCost(generateRandomMatrix(PizzaDelivery.NUM_ROWS, PizzaDelivery.NUM_COLS)) > 0);
+        long totalTime = System.currentTimeMillis() - startTime;
+
+        System.out.println("Total time: " + totalTime + " millis.");
     }
 
     private static int[][] generateRandomMatrix(int x, int y) {
