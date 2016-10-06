@@ -12,11 +12,13 @@ public class PizzaDelivery {
     public static final int NUM_COLS = 100;
 
     private int[][] allCostsMatrix;
+    private char[][] marks;
     private int minCost;
 
     public PizzaDelivery(int n) {
         allCostsMatrix = new int[n][n];
         minCost = Integer.MAX_VALUE;
+        marks = new char[n][n];
     }
 
     public static void main(String[] args) {
@@ -35,8 +37,8 @@ public class PizzaDelivery {
             }
             int[][] matrix = new int[x][y];
 
-            for (int i = 0; i < matrix.length ; i++) {
-                for (int j = 0; j < matrix[i].length ; j++) {
+            for (int i = 0; i < matrix.length; i++) {
+                for (int j = 0; j < matrix[i].length; j++) {
                     matrix[i][j] = scan.nextInt();
                 }
 
@@ -64,8 +66,8 @@ public class PizzaDelivery {
             System.out.println("************ COSTS **************");
         }
 
-        for (int i = 0; i < matrix.length ; i++) {
-            for (int j = 0; j < matrix[i].length ; j++) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
                 calculateCostFor(i, j, matrix);
 
                 if (allCostsMatrix[i][j] < minCost) {
@@ -93,33 +95,65 @@ public class PizzaDelivery {
             System.out.println("************ MATRIX[" + x + "][" + y + "] **************");
         }
 
-        for (int i = 0; i < matrix.length ; i++) {
+        int upToHalfMatrix = (int) Math.ceil(matrix.length / 2);
 
-            for (int j = 0; j < matrix.length ; j++) {
+        for (int i = 0; i < upToHalfMatrix; i++) {
 
-                if (i != x || j != y) {
+            for (int j = i; j < matrix.length - i; j++) {
 
-                    int distance = (Math.abs(x - i) + Math.abs(y - j));
-                    costMatrix[i][j] = matrix[i][j] * distance;
-                    allCostsMatrix[x][y] += costMatrix[i][j];
 
-                    if (x != y) {
-                        costMatrix[j][i] = matrix[j][i] * distance;
-                        allCostsMatrix[y][x] += costMatrix[j][i];
-                    }
+                int distance = (Math.abs(x - i) + Math.abs(y - j));
+
+                //if (costMatrix[i][j] != 0) throw new IllegalStateException("Trying to set value");
+                costMatrix[i][j] = matrix[i][j] * distance;
+                allCostsMatrix[x][y] += costMatrix[i][j];
+                marks[i][j] = 'X';
+
+                if (i != matrix.length - (i + 1) && j != matrix.length - (j + 1)) {
+
+                    int distanceB = (Math.abs(x - (matrix.length - (i + 1))) + Math.abs(y - (matrix.length - (j + 1))));
+
+                    costMatrix[matrix.length - (i + 1)][matrix.length - (j + 1)] = matrix[matrix.length - (i + 1)][matrix.length - (j + 1)] * distanceB;
+                    allCostsMatrix[x][y] += costMatrix[matrix.length - (i + 1)][matrix.length - (j + 1)];
+
+                    marks[matrix.length - (i + 1)][matrix.length - (j + 1)] = '#';
+                }
+
+                if (i != j && j < matrix.length - 1 && j != (matrix.length - (i + 1))) {
+
+                    int distanceOpposite = (Math.abs(x - j) + Math.abs(y - i));
+                    costMatrix[j][i] = matrix[j][i] * distanceOpposite;
+                    allCostsMatrix[x][y] += costMatrix[j][i];
+
+                    marks[j][i] = '-';
+
+                    int distanceD = (Math.abs(x - (matrix.length - (j + 1))) + Math.abs(y - (matrix.length - (i + 1))));
+                    costMatrix[matrix.length - (j + 1)][matrix.length - (i + 1)] = matrix[matrix.length - (j + 1)][matrix.length - (i + 1)] * distanceD;
+                    //System.out.println("i=" + (matrix.length - (j + 1)) + " j = " + (matrix.length - (i + 1)) + " distance = " + distanceD +  " total = " +  costMatrix[matrix.length - (j + 1)][matrix.length - (i + 1)]);
+                    allCostsMatrix[x][y] += costMatrix[matrix.length - (j + 1)][matrix.length - (i + 1)];
+                    marks[matrix.length - (j + 1)][matrix.length - (i + 1)] = '%';
                 }
 
             }
 
-            if (IS_DEBUG) {
-                //System.out.println(Arrays.toString(costMatrix[i]));
-            }
+
         }
 
         if (IS_DEBUG) {
             System.out.println("Calculated cost: " + allCostsMatrix[x][y]);
-            System.out.println("Calculated cost: " + allCostsMatrix[y][x]);
         }
+
+        if (IS_DEBUG) {
+
+            for (int k = 0; k < matrix.length; k++) {
+                //System.out.println(Arrays.toString(marks[k]));
+            }
+
+            for (int k = 0; k < matrix.length; k++) {
+                System.out.println(Arrays.toString(costMatrix[k]));
+            }
+        }
+
     }
 
 }
